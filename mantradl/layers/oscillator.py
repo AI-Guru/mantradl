@@ -19,7 +19,6 @@ class Oscillator(Layer):
 
     def build(self, input_shape):
 
-        print("input_shape", input_shape)
         self.oscillators = input_shape[1]
 
         super(Oscillator, self).build(input_shape)  # Be sure to call this at the end
@@ -30,20 +29,17 @@ class Oscillator(Layer):
         frames_range = np.arange(self.output_size)
 
         def create_waves(triples):
-            print("triples", triples)
             waves = K.map_fn(create_wave, triples)
             wave = K.sum(waves, axis=0) / self.oscillators
             return wave
 
         def create_wave(triple):
-            print("triple", triple)
 
             frequency = triple[0]
             amplitude = triple[1]
             phase = triple[2]
             samples = phase + frames_range * 2 * math.pi * frequency / self.sample_rate
             wave = amplitude * K.sin(samples)
-            print("wave", wave)
             return wave
 
         waves = K.map_fn(create_waves, x)
