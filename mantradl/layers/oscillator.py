@@ -3,16 +3,26 @@ from keras.engine.topology import Layer
 import numpy as np
 import math
 
+
 class Oscillator(Layer):
 
     def __init__(
         self,
         output_size,
         sample_rate,
+        min_frequency=None,
+        max_frequency=None,
         **kwargs):
+
+        if min_frequency == None and max_frequency != None or min_frequency != None and max_frequency == None:
+            raise Exception("min_frequency and max_frequency must be either None or values")
+        else:
+            assert min_frequency < max_frequency, "Constraint violation: min_frequency < max_frequency."
 
         self.output_size = output_size
         self.sample_rate = sample_rate
+        self.min_frequency = min_frequency
+        self.max_frequency = max_frequency
 
         super(Oscillator, self).__init__(**kwargs)
 
@@ -34,8 +44,10 @@ class Oscillator(Layer):
             return wave
 
         def create_wave(triple):
-
-            frequency = triple[0]
+            if self.min_frequency == None and self.max_frequency == None:
+                frequency = triple[0]
+            else:
+                frequency = triple[0] * (self.max_frequency - self.min_frequency) + self.min_frequency
             amplitude = triple[1]
             phase = triple[2]
             samples = phase + frames_range * 2 * math.pi * frequency / self.sample_rate
