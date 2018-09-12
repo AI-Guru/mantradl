@@ -15,14 +15,14 @@ class SincConv1D(Layer):
 
     def __init__(
         self,
-        N_filt,
         Filt_dim,
+        N_filt,
         fs,
         **kwargs):
 
-        self.N_filt=N_filt
-        self.Filt_dim=Filt_dim
-        self.fs=fs
+        self.N_filt = N_filt
+        self.Filt_dim = Filt_dim
+        self.fs = fs
 
         super(SincConv1D, self).__init__(**kwargs)
 
@@ -97,7 +97,8 @@ class SincConv1D(Layer):
         debug_print("  filters", filters)
         out = K.conv1d(
             x,
-            kernel=filters
+            kernel=filters,
+            padding="same"
         )
         debug_print("  out", out)
 
@@ -107,7 +108,7 @@ class SincConv1D(Layer):
         new_size = conv_utils.conv_output_length(
             input_shape[1],
             self.N_filt,
-            padding="valid",
+            padding="same",
             stride=1,
             dilation=1)
         return (input_shape[0],) + (new_size,) + (self.Filt_dim,)
